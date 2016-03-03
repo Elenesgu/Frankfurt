@@ -1,4 +1,4 @@
-#include "FRABitamp.h"
+#include "FRABitmap.h"
 #include "FRAImageProcedure.h"
 #include<stdlib.h>
 #include<stdio.h>
