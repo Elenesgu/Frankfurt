@@ -149,7 +149,7 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FRABitamp.h" />
+    <ClInclude Include="FRABitmap.h" />
     <ClInclude Include="FRAImageProcedure.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

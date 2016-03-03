@@ -1,4 +1,4 @@
 #pragma once
-#include"FRABitamp.h"
+#include"FRABitmap.h"
 
 int FRAInvertImage(FRARawImage* input);

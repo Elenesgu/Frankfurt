@@ -24,11 +24,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FRABitamp.h">
-      <Filter>비트맵</Filter>
-    </ClInclude>
     <ClInclude Include="FRAImageProcedure.h">
       <Filter>이미지 처리</Filter>
+    </ClInclude>
+    <ClInclude Include="FRABitmap.h">
+      <Filter>비트맵</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
