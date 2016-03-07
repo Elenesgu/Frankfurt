@@ -11,6 +11,9 @@
     <Filter Include="이미지 처리">
       <UniqueIdentifier>{c3576b81-f597-495b-a742-a50827ed00c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더">
+      <UniqueIdentifier>{646e6d0e-c8ee-4ff8-8b13-349b3157da16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -29,6 +32,12 @@
     </ClInclude>
     <ClInclude Include="FRABitmap.h">
       <Filter>비트맵</Filter>
+    </ClInclude>
+    <ClInclude Include="Franfurt.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="FRAEnum.h">
+      <Filter>헤더</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

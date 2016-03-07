@@ -1,4 +1,5 @@
 #include "FRAImageProcedure.h"
+#include "FRAEnum.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define _GPU_PARALLEL
@@ -56,6 +57,7 @@ int FRAInvertImage(FRARawImage* input) {
 	cl_int ret;
 	cl_mem memobj;
 
+	
 	size_t maxBitsNum = input->height * input->width * 3;
 
 	FILE *fp;
@@ -66,24 +68,21 @@ int FRAInvertImage(FRARawImage* input) {
 	/* Load the source code containing the kernel*/
 	fp = fopen(fileName, "r");
 	if (!fp) {
-		fprintf(stderr, "Failed to load kernel.\n");
-		exit(1);
+		return FRA_NO_CL_KERNEL_FILE;
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
 	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 
 	/* Get Platform and Device Info */
-	if (clGetPlatformIDs(1, &platform_id, &ret_num_platforms) != CL_SUCCESS)
-	{
-		printf("Unable to get platform_id\n");
-		return 1;
+	if (clGetPlatformIDs(1, &platform_id,
+		&ret_num_platforms) != CL_SUCCESS)	{
+		return FRA_NO_CL_PLATORM;
 	}
 
-	if (clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_DEFAULT, 1, &device_id, &ret_num_devices) != CL_SUCCESS)
-	{
-		printf("Unable to get device_id\n");
-		return 1;
+	if (clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_DEFAULT,
+		1, &device_id, &ret_num_devices) != CL_SUCCESS){
+		return FRA_CL_DEVICE_ERROR;
 	}
 
 	/* Create OpenCL context */
@@ -93,19 +92,20 @@ int FRAInvertImage(FRARawImage* input) {
 	command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
 
 	/* Create Memory Buffer */
-	memobj = clCreateBuffer(context, CL_MEM_READ_WRITE, maxBitsNum * sizeof(unsigned char), NULL, &ret);
+	memobj = clCreateBuffer(context, CL_MEM_READ_WRITE,
+		maxBitsNum * sizeof(unsigned char), NULL, &ret);
 
-	clEnqueueWriteBuffer(command_queue, memobj, CL_TRUE, 0, maxBitsNum * sizeof(unsigned char), input->bits, 0, NULL, NULL);
+	clEnqueueWriteBuffer(command_queue, memobj, CL_TRUE, 0,
+		maxBitsNum * sizeof(unsigned char), input->bits, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
-	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
-		(const size_t *)&source_size, &ret);
+	program = clCreateProgramWithSource(context, 1, 
+		(const char **)&source_str, (const size_t *)&source_size, &ret);
 
 	/* Build Kernel Program */
-	if (clBuildProgram(program, 1, &device_id, NULL, NULL, NULL) != CL_SUCCESS)
-	{
-		printf("Error building program\n");
-		return 1;
+	if (clBuildProgram(program, 1, &device_id,
+		NULL, NULL, NULL) != CL_SUCCESS) {
+		return FRA_CL_PROGRAM_BUILD_ERROR;
 	}
 
 	/* Create OpenCL Kernel */
@@ -114,7 +114,8 @@ int FRAInvertImage(FRARawImage* input) {
 	/* Set OpenCL Kernel Parameters */
 	clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&memobj);
 
-	clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &maxBitsNum, NULL, 0, NULL, NULL);
+	clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL,
+		&maxBitsNum, NULL, 0, NULL, NULL);
 	clFinish(command_queue);
 
 	/* Copy results from the memory buffer */
@@ -134,4 +135,6 @@ int FRAInvertImage(FRARawImage* input) {
 
 	free(source_str);
 #endif
+
+	return FRA_SUCCESS;
 }

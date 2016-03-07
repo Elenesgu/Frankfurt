@@ -26,13 +26,7 @@ typedef struct {
 } FRABitampInfoHeader;
 #pragma pack(pop)
 
-typedef enum {
-	FRABIT_MEM_NULL_ERROR = -2,
-	FRABIT_MEM_ALLOC_ERROR = -1,
-	FRABIT_SUCCESS = 0,
-	FRABIT_FILE_ERROR,
-	FRABIT_NOT_SUPPORTED_FORMAT
-} FRABitmapError;
+
 
 typedef struct {
 	int width;
