@@ -3,3 +3,4 @@
 
 
 int FRAInvertImage(FRARawImage* input);
+int FRARemoveHaze(FRARawImage* input);

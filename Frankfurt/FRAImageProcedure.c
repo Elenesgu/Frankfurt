@@ -2,7 +2,7 @@
 #include "FRAEnum.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define _GPU_PARALLEL
+#include <math.h>
 //#define _CPU_PARALLEL
 
 //Header files should be located in exact ifdef area.
@@ -15,7 +15,7 @@
 #endif
 
 #ifdef _GPU_PARALLEL
-
+#pramga commnet(lib, "OpenCL.lib");
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else
@@ -27,6 +27,9 @@
 
 int FRAInvertImage(FRARawImage* input) {
 	//Invert image with no parallelization.
+	if (input == NULL) {
+		return FRA_MEM_NULL_ERROR;
+	}
 #ifdef _CPU_ONLY
 	int maxBitsNum = input->height * input->width * 3;
 	for (int x = 0; x < maxBitsNum; x++) {
@@ -136,5 +139,43 @@ int FRAInvertImage(FRARawImage* input) {
 	free(source_str);
 #endif
 
+	return FRA_SUCCESS;
+}
+
+int FRARemoveHaze(FRARawImage * input) {
+	if (input == NULL) {
+		return FRA_MEM_NULL_ERROR;
+	}
+#ifdef _CPU_ONLY
+
+	int maxBitsNum = input->height * input->width * 3;
+	double t, luminance, beta;
+	beta = 1.0;
+	double atmospheric_light = 0.0;
+	unsigned char a[3];
+	double tmp_light;
+	for (int x = 0; x < maxBitsNum; x += 3) {
+		tmp_light = input->bits[x] * 0.299
+			+ input->bits[x + 1] * 0.587
+			+ input->bits[x + 2] * 0.114;
+		if (tmp_light > atmospheric_light)	{
+			atmospheric_light = tmp_light;
+			a[0] = input->bits[0];
+			a[1] = input->bits[1];
+			a[2] = input->bits[2];
+		}
+	}
+	for (int x = 0; x < maxBitsNum; x += 3) {
+		luminance = input->bits[x] * 0.299
+			+ input->bits[x + 1] * 0.587
+			+ input->bits[x + 2] * 0.114;
+		t = exp(-1.0 * beta * luminance);
+		for (int i = 0; i < 3; i++) {
+			input->bits[x+i] = (input->bits[x+i]
+				- a[i]) / t + a[i];
+		}		
+	}
+
+#endif
 	return FRA_SUCCESS;
 }

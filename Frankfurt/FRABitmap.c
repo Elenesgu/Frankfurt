@@ -20,7 +20,6 @@ int FRAOpenBitmapFile(const char* filename, FRARawImage** result) {
 	filePtr = fopen(filename, "rb");
 
 	if (filePtr == NULL) {
-		fclose(filePtr);
 		return FRA_FILE_ERROR;
 	}
 
